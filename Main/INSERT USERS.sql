@@ -1,0 +1,4 @@
+use Customers
+go
+INSERT Users(ID, MAIN_NAME, USER_STATUS)
+VALUES (4268413549, 'POPOPP', 'USER')
