@@ -5,7 +5,13 @@ from telebot import types
 
 bot = telebot.TeleBot('6366348527:AAFcFWXB57aK06gZFdRn-Bdc0YNVcijb0C0')
 
-connect = pyodbc.connect("DRIVER={SQL Server}; SERVER=DESKTOP-SMAKMB9\DIMONSQLSERVER; DATABASE=Customers; UID=DESKTOP-SMAKMB9\dimon; PWD=password")
+key = (
+      "DRIVER={SQL Server};"
+      "SERVER=DESKTOP-SMAKMB9\DIMONSQLSERVER;"
+      "DATABASE=Customers;"
+      "Trusted_Connection=yes;")
+
+connect = pyodbc.connect(key)
 cursor = connect.cursor()
 
 class Student:
@@ -54,6 +60,12 @@ def choose_start(message):
     btn3 = types.KeyboardButton('Изменить список присутсвующих')
     Buttons.add(btn1, btn2, btn3)
   else:
+    cursor.execute(f'SELECT ID FROM Users WHERE ID={std.id}')
+    answer = cursor.fetchall()
+    if(std.id != answer):
+      cursor.execute(f"INSERT Users(ID, MAIN_NAME, USER_STATUS) VALUES ({std.id}, '{std.name}', '{std.status}')")
+      cursor.commit()
+    print(answer)
     btn1 = types.KeyboardButton('Список присутствующих')
     btn2 = types.KeyboardButton('Кто дежурит')
     Buttons.add(btn1, btn2)
@@ -71,7 +83,9 @@ def choose_duty(message):
     duty_pair = random.sample(students, 2)
     bot.send_message(message.chat.id, f"Дежурят: {duty_pair[0]}, {duty_pair[1]}")
   elif(message.text == 'Изменить список присутсвующих'):
-    cursor.execute('SELECT * FROM Users')
+    cursor.execute('SELECT ID FROM Users')
+    answer = cursor.fetchall()
+    bot.send_message(message.chat.id, answer)
 
 bot.polling(none_stop=True, interval=0)
 
