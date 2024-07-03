@@ -1,6 +1,7 @@
 import random
 import pyodbc
 import telebot
+import re
 from telebot import types
 
 bot = telebot.TeleBot('6366348527:AAFcFWXB57aK06gZFdRn-Bdc0YNVcijb0C0')
@@ -53,6 +54,7 @@ students = [
 def choose_start(message):
   std = Student(message.chat.id, message.from_user.first_name, 'user')
   Buttons = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
   if(std.id in admins):
     std.status = 'adm'
     btn1 = types.KeyboardButton('Список присутствующих')
@@ -60,18 +62,22 @@ def choose_start(message):
     btn3 = types.KeyboardButton('Изменить список присутсвующих')
     Buttons.add(btn1, btn2, btn3)
   else:
-    cursor.execute(f'SELECT ID FROM Users WHERE ID={std.id}')
-    answer = cursor.fetchall()
-    if(std.id != answer):
+    cursor.execute(f"SELECT CASE WHEN EXISTS(SELECT 1 FROM Users WHERE id = {std.id}) THEN 1 ELSE 0 END")
+    answer = re.sub("[^0-9]", "", str(cursor.fetchall()))
+
+    if(int(answer) == 0):
       cursor.execute(f"INSERT Users(ID, MAIN_NAME, USER_STATUS) VALUES ({std.id}, '{std.name}', '{std.status}')")
       cursor.commit()
+      print(f"Регистрация Пользователя {std.name}: [{std.id}, {std.status}] прошла успешно")
+    elif(int(answer) == 1):
+      print(f'Пользователь {std.name}: [{std.id}, {std.status}] уже зарегестрирован')
+
     print(answer)
     btn1 = types.KeyboardButton('Список присутствующих')
     btn2 = types.KeyboardButton('Кто дежурит')
     Buttons.add(btn1, btn2)
-
   bot.send_message(message.chat.id, f'Привет {message.from_user.first_name}, я бот-дежурный для группы З-3-9Б-21, что ты хочешь узнать?', reply_markup=Buttons)
-  print(f'Пользователь {std.name}: {std.id}, {std.status}')
+
 
 
 @bot.message_handler(content_types=['text'])
@@ -86,6 +92,7 @@ def choose_duty(message):
     cursor.execute('SELECT ID FROM Users')
     answer = cursor.fetchall()
     bot.send_message(message.chat.id, answer)
+    connect.close()
 
 bot.polling(none_stop=True, interval=0)
 
