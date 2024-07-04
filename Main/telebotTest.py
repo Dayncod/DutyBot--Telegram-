@@ -65,19 +65,18 @@ def choose_start(message):
   elif(int(answer) == 1):
     if(std.id in admins):
       std.status = 'adm'
-      cursor.execute(f"UPDATE Users SET USER_STATUS = 'adm' WHERE ID = {std.id}")
-      cursor.commit()
     else:
       std.status = 'user'
-      cursor.execute(f"UPDATE Users SET USER_STATUS = 'user' WHERE ID = {std.id}")
-      cursor.commit()
+    cursor.execute(f"UPDATE Users SET USER_STATUS = '{std.status}' WHERE ID = {std.id}")
+    cursor.commit()
     print(f'Пользователь {std.name}: [{std.id}, {std.status}] уже зарегестрирован')
 
   if(std.id in admins):
     btn1 = types.KeyboardButton('Список присутствующих')
     btn2 = types.KeyboardButton('Кто дежурит')
     btn3 = types.KeyboardButton('Изменить список присутсвующих')
-    Buttons.add(btn1, btn2, btn3)
+    Buttons.add(btn1, btn2)
+    Buttons.add(btn3)
   else:
     btn1 = types.KeyboardButton('Список присутствующих')
     btn2 = types.KeyboardButton('Кто дежурит')
@@ -88,16 +87,60 @@ def choose_start(message):
 @bot.message_handler(content_types=['text'])
 def choose_duty(message):
   if(message.text == 'Список присутствующих'):
+    StdString = ''
     for i in range(len(students)):
-      bot.send_message(message.chat.id, f'{i + 1}. {students[i]}\n')
+      StdString += (str((i + 1)) + '. ' + students[i] + ' \n')
+    bot.send_message(message.chat.id, f'{StdString}')     
   elif(message.text == 'Кто дежурит'):
     duty_pair = random.sample(students, 2)
     bot.send_message(message.chat.id, f"Дежурят: {duty_pair[0]}, {duty_pair[1]}")
   elif(message.text == 'Изменить список присутсвующих'):
-    cursor.execute('SELECT ID FROM Users')
-    answer = cursor.fetchall()
-    bot.send_message(message.chat.id, answer)
-    connect.close()
+    keyboard = types.InlineKeyboardMarkup(row_width=4)
+
+    callbackButton1 = types.InlineKeyboardButton(text='Барков В.Е.', callback_data='test')
+    callbackButton2 = types.InlineKeyboardButton(text='Берчун Д.А.', callback_data='test')
+    callbackButton3 = types.InlineKeyboardButton(text='Гаврилов Н.А.', callback_data='test')
+    callbackButton4 = types.InlineKeyboardButton(text='Горяйнов Т.А.', callback_data='test')
+
+    callbackButton5 = types.InlineKeyboardButton(text='Дубицкий Д.С.', callback_data='test')
+    callbackButton6 = types.InlineKeyboardButton(text='Зарубайлова А.А.', callback_data='test')
+    callbackButton7 = types.InlineKeyboardButton(text='Кабаркдин С.А.', callback_data='test')
+    callbackButton8 = types.InlineKeyboardButton(text='Ленков Н.О.', callback_data='test')
+
+    callbackButton9 = types.InlineKeyboardButton(text='Мельников Г.В.', callback_data='test')
+    callbackButton10 = types.InlineKeyboardButton(text='Мельниченко Д.В.', callback_data='test')
+    callbackButton11 = types.InlineKeyboardButton(text='Новохатько К.А.', callback_data='test')
+    callbackButton12 = types.InlineKeyboardButton(text='Пищальноков Д.А.', callback_data='test')
+
+    callbackButton13 = types.InlineKeyboardButton(text='Плащевский Е.К.', callback_data='test')
+    callbackButton14 = types.InlineKeyboardButton(text='Русов Г.А.', callback_data='test')
+    callbackButton15 = types.InlineKeyboardButton(text='Рябов М.Е.', callback_data='test')
+    callbackButton16 = types.InlineKeyboardButton(text='Савин М.А.', callback_data='test')
+
+    callbackButton17 = types.InlineKeyboardButton(text='Селивёрстов А.И.', callback_data='test')
+    callbackButton18 = types.InlineKeyboardButton(text='Сидорчук О.В.', callback_data='test')
+    callbackButton19 = types.InlineKeyboardButton(text='Фёдоров С.Е.', callback_data='test')
+    callbackButton20 = types.InlineKeyboardButton(text='Филиппенко А. Н.', callback_data='test')
+
+    callbackButton21 = types.InlineKeyboardButton(text='Хандримайло Д.В.', callback_data='test')
+    callbackButton22 = types.InlineKeyboardButton(text='Чеверда Я.А.', callback_data='test')
+    callbackButton23 = types.InlineKeyboardButton(text='Шкурдюк С.А.', callback_data='test')
+    callbackButton24 = types.InlineKeyboardButton(text='Шпунтова П.В.', callback_data='test')
+
+    callbackButtonComplete = types.InlineKeyboardButton(text='Подтвердить', callback_data='text')
+
+    keyboard.add(callbackButton1, callbackButton2, callbackButton3, callbackButton4)
+    keyboard.add(callbackButton5, callbackButton6, callbackButton7, callbackButton8)
+    keyboard.add(callbackButton9, callbackButton10, callbackButton11, callbackButton12)
+    keyboard.add(callbackButton13, callbackButton14, callbackButton15, callbackButton16)
+    keyboard.add(callbackButton17, callbackButton18, callbackButton19, callbackButton20)
+    keyboard.add(callbackButton21, callbackButton22, callbackButton23, callbackButton24)
+
+    keyboard.add(callbackButtonComplete)
+
+    bot.send_message(message.chat.id, 'Измените список присутствующих', reply_markup=keyboard)
+
+ # @bot.callback_query_handler()
 
 bot.polling(none_stop=True, interval=0)
 
