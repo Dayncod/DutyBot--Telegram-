@@ -146,11 +146,11 @@ def choose_duty(message):
       keyboard.add(callbackButton21, callbackButton22, callbackButton23, callbackButton24)
 
       keyboard.add(callbackButtonComplete)
+      bot.send_message(message.chat.id, 'Измените список присутствующих', reply_markup=keyboard)
     else:
       bot.send_message(message.chat.id, 'Недостаточно прав доступа')   
-
-    bot.send_message(message.chat.id, 'Измените список присутствующих', reply_markup=keyboard)
-
+  else:
+    bot.send_message(message.chat.id, 'Неизвестная команда') 
  # @bot.callback_query_handler()
 
 bot.polling(none_stop=True, interval=0)
