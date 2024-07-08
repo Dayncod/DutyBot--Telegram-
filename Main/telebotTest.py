@@ -79,7 +79,7 @@ def choose_start(message):
   elif(int(answer2) == 0):
     btn1 = types.KeyboardButton('Список присутствующих')
     btn2 = types.KeyboardButton('Кто дежурит')
-    btn3 = types.KeyboardButton('Изменить список присутствующих')
+    btn3 = types.KeyboardButton('Изменить список  ')
     Buttons.add(btn1, btn2)
     Buttons.add(btn3)
   connect.close()
