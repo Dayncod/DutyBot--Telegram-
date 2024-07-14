@@ -15,6 +15,7 @@ class Student:
  def __init__(self, id, name): 
   self.id = id
   self.name = name
+  self.Presence = True
 
 students = [
   "Барков В.Е.",
@@ -79,7 +80,7 @@ def choose_start(message):
   elif(int(answer2) == 0):
     btn1 = types.KeyboardButton('Список присутствующих')
     btn2 = types.KeyboardButton('Кто дежурит')
-    btn3 = types.KeyboardButton('Изменить список  ')
+    btn3 = types.KeyboardButton('Изменить список присутствующих')
     Buttons.add(btn1, btn2)
     Buttons.add(btn3)
   connect.close()
@@ -104,7 +105,7 @@ def choose_command(message):
     bot.send_message(message.chat.id, f"Дежурят: {duty_pair[0]}, {duty_pair[1]}")
   elif(message.text == 'Изменить список присутствующих'):
     if(int(answer3) == 0):
-      keyboard = types.InlineKeyboardMarkup(row_width=4)
+      keyboard = types.InlineKeyboardMarkup(row_width=3)
 
       callbackButton1 = types.InlineKeyboardButton(text='Барков В.Е.', callback_data='1')
       callbackButton2 = types.InlineKeyboardButton(text='Берчун Д.А.', callback_data='2')
@@ -138,25 +139,52 @@ def choose_command(message):
 
       callbackButtonComplete = types.InlineKeyboardButton(text='Подтвердить', callback_data='text')
 
-      keyboard.add(callbackButton1, callbackButton2, callbackButton3, callbackButton4)
-      keyboard.add(callbackButton5, callbackButton6, callbackButton7, callbackButton8)
-      keyboard.add(callbackButton9, callbackButton10, callbackButton11, callbackButton12)
-      keyboard.add(callbackButton13, callbackButton14, callbackButton15, callbackButton16)
-      keyboard.add(callbackButton17, callbackButton18, callbackButton19, callbackButton20)
-      keyboard.add(callbackButton21, callbackButton22, callbackButton23, callbackButton24)
-
+      keyboard.add(callbackButton1, callbackButton2, callbackButton3)
+      keyboard.add(callbackButton4, callbackButton5, callbackButton6)
+      keyboard.add(callbackButton7, callbackButton8, callbackButton9)
+      keyboard.add(callbackButton10, callbackButton11, callbackButton12)
+      keyboard.add(callbackButton13, callbackButton14, callbackButton15)
+      keyboard.add(callbackButton16, callbackButton17, callbackButton18)
+      keyboard.add(callbackButton19, callbackButton20, callbackButton21)
+      keyboard.add(callbackButton22, callbackButton23, callbackButton24)
       keyboard.add(callbackButtonComplete)
+
       bot.send_message(message.chat.id, 'Измените список присутствующих', reply_markup=keyboard)
     else:
       bot.send_message(message.chat.id, 'Недостаточно прав доступа')   
   else:
     bot.send_message(message.chat.id, 'Неизвестная команда') 
+
   @bot.callback_query_handler(func=lambda call: True)
   def callback(call): 
     if(call.data == '1'):
-      bot.send_message(call.message.chat.id, '~Это Влад~', parse_mode="MarkdownV2")
-      
+      keyboard = types.InlineKeyboardMarkup(row_width=3)
+      callbackButton1 = types.InlineKeyboardButton(text='~Это Влад~', callback_data='-1',  parse_mode="MarkdownV2")
 
+      keyboard.add(callbackButton1, callbackButton2, callbackButton3)
+      keyboard.add(callbackButton4, callbackButton5, callbackButton6)
+      keyboard.add(callbackButton7, callbackButton8, callbackButton9)
+      keyboard.add(callbackButton10, callbackButton11, callbackButton12)
+      keyboard.add(callbackButton13, callbackButton14, callbackButton15)
+      keyboard.add(callbackButton16, callbackButton17, callbackButton18)
+      keyboard.add(callbackButton19, callbackButton20, callbackButton21)
+      keyboard.add(callbackButton22, callbackButton23, callbackButton24)
+      keyboard.add(callbackButtonComplete)
+      bot.edit_message_text(chat_id=call.message.chat.id,  message_id=call.message.message_id, text='Изменено', reply_markup=keyboard)
+    elif(call.data == '-1'):
+      keyboard = types.InlineKeyboardMarkup(row_width=3)
+      callbackButton1 = types.InlineKeyboardButton(text='Это Влад', callback_data='1')
+
+      keyboard.add(callbackButton1, callbackButton2, callbackButton3)
+      keyboard.add(callbackButton4, callbackButton5, callbackButton6)
+      keyboard.add(callbackButton7, callbackButton8, callbackButton9)
+      keyboard.add(callbackButton10, callbackButton11, callbackButton12)
+      keyboard.add(callbackButton13, callbackButton14, callbackButton15)
+      keyboard.add(callbackButton16, callbackButton17, callbackButton18)
+      keyboard.add(callbackButton19, callbackButton20, callbackButton21)
+      keyboard.add(callbackButton22, callbackButton23, callbackButton24)
+      keyboard.add(callbackButtonComplete)
+      bot.edit_message_text(chat_id=call.message.chat.id,  message_id=call.message.message_id, text='Изменено обратно', reply_markup=keyboard)
 
 bot.polling(none_stop=True, interval=0)
 
