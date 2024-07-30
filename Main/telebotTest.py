@@ -11,6 +11,8 @@ bot = telebot.TeleBot('6366348527:AAFcFWXB57aK06gZFdRn-Bdc0YNVcijb0C0')
 
 key = "DRIVER={SQL Server}; SERVER=DESKTOP-SMAKMB9\DIMONSQLSERVER; DATABASE=Customers; Trusted_Connection=yes;"
 
+PL = PresenceList.Presence
+
 connect = pyodbc.connect(key)
 cursor = connect.cursor()
 
@@ -110,17 +112,18 @@ def choose_command(message):
     bot.send_message(message.chat.id, f"Дежурят: {duty_pair[0]}, {duty_pair[1]}")
   elif(message.text == 'Изменить список присутствующих'):
     if(int(answer3) == 0):
-      keyboard = PresenceList.Presence.List()
-      bot.send_message(message.chat.id, 'Измените список присутствующих', reply_markup=keyboard)
+      keyboard = PL.List()
+      bot.send_message(message.chat.id, 'Таблица присутствующих', reply_markup=keyboard)
     else:
       bot.send_message(message.chat.id, 'Недостаточно прав доступа')   
   else:
     bot.send_message(message.chat.id, 'Неизвестная команда') 
 
   @bot.callback_query_handler(func=lambda call: True)
-  def callback(call): 
-    Editkeyboard = PresenceList.Presence.EditList(call.data)
-    bot.edit_message_text(chat_id=call.message.chat.id,  message_id=call.message.message_id, text='Изменено', reply_markup=Editkeyboard)
+  def callback(call):
+      Editkeyboard = PL.EditList(call.data)
+      bot.edit_message_text(chat_id=call.message.chat.id,  message_id=call.message.message_id, text='Таблица присутствующих', reply_markup=Editkeyboard)
+
 bot.polling(none_stop=True, interval=0)
 
 
