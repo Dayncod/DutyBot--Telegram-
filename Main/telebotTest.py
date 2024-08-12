@@ -58,6 +58,7 @@ def choose_start(message):
 
   cursor.execute(f"SELECT CASE WHEN EXISTS(SELECT 1 FROM Users WHERE id = {std.id}) THEN 1 ELSE 0 END")
   answer = re.sub("[^0-9]", "", str(cursor.fetchall()))
+
   if(int(answer) == 0):
     cursor.execute(f"INSERT Users(ID, MAIN_NAME, USER_STATUS) VALUES ({std.id}, '{std.name}', 'user')")
     cursor.commit()
@@ -66,6 +67,7 @@ def choose_start(message):
   elif(int(answer) == 1):
     cursor.execute(f"SELECT CASE WHEN EXISTS(SELECT 1 FROM Users WHERE USER_STATUS = 'user' and ID = {std.id}) THEN 1 ELSE 0 END")
     answer1 = re.sub("[^0-9]", "", str(cursor.fetchall()))
+
     if(int(answer1) == 1):
       connect.close()
       print(f'Пользователь {std.name}: [{std.id}, user] уже зарегистрирован')
@@ -78,6 +80,7 @@ def choose_start(message):
   connect = pyodbc.connect(key)
   cursor.execute(f"SELECT CASE WHEN EXISTS(SELECT 1 FROM Users WHERE USER_STATUS = 'user' and ID = {std.id}) THEN 1 ELSE 0 END")
   answer2 = re.sub("[^0-9]", "", str(cursor.fetchall()))
+
   if(int(answer2) == 1):
     btn1 = types.KeyboardButton('Список присутствующих')
     btn2 = types.KeyboardButton('Кто дежурит')
@@ -90,6 +93,7 @@ def choose_start(message):
     Buttons.add(btn1, btn2)
     Buttons.add(btn3)
     bot.send_message(message.chat.id, f'Здравствуйте, Администратор {message.from_user.first_name}', reply_markup=Buttons)
+
   connect.close()
   
 
@@ -102,20 +106,25 @@ def choose_command(message):
   connect = pyodbc.connect(key)
   cursor.execute(f"SELECT CASE WHEN EXISTS(SELECT 1 FROM Users WHERE USER_STATUS = 'user' and ID = {std.id}) THEN 1 ELSE 0 END")
   answer3 = re.sub("[^0-9]", "", str(cursor.fetchall()))
+  connect.close()
+
   if(message.text == 'Список присутствующих'):
-    StdString = ''
-    for i in range(len(students)):
-      StdString += (str((i + 1)) + '. ' + students[i] + ' \n')
-    bot.send_message(message.chat.id, f'{StdString}')     
+    StdString = PL.ShowStringList()
+    bot.send_message(message.chat.id, f'{StdString}')
+    # bot.edit_message_text(chat_id = message.chat.id, message_id = message.message_id, text=f'{StdString}')
+
+
   elif(message.text == 'Кто дежурит'):
     duty_pair = random.sample(students, 2)
     bot.send_message(message.chat.id, f"Дежурят: {duty_pair[0]}, {duty_pair[1]}")
   elif(message.text == 'Изменить список присутствующих'):
+
     if(int(answer3) == 0):
       keyboard = PL.List()
       bot.send_message(message.chat.id, 'Таблица присутствующих', reply_markup=keyboard)
     else:
       bot.send_message(message.chat.id, 'Недостаточно прав доступа')   
+
   else:
     bot.send_message(message.chat.id, 'Неизвестная команда') 
 
