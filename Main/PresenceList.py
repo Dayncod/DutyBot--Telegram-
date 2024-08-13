@@ -80,7 +80,6 @@ class Presence:
 
     def ShowStringList():
         PresenString = ""
-        PresenList = [0]
         Num = 0
 
         for i in range(len(Presence.students)):
