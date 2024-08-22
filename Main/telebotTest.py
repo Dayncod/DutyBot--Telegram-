@@ -1,4 +1,3 @@
-import random
 import pyodbc
 import telebot
 import re
@@ -7,11 +6,11 @@ import PresenceList
 
 from telebot import types
 
+PL = PresenceList.Presence
+
 bot = telebot.TeleBot('6366348527:AAFcFWXB57aK06gZFdRn-Bdc0YNVcijb0C0')
 
 key = "DRIVER={SQL Server}; SERVER=DESKTOP-SMAKMB9\DIMONSQLSERVER; DATABASE=Customers; Trusted_Connection=yes;"
-
-PL = PresenceList.Presence
 
 connect = pyodbc.connect(key)
 cursor = connect.cursor()
@@ -21,33 +20,6 @@ class Student:
   self.id = id
   self.name = name
   self.Presence = True
-
-students = [
-  "Барков В.Е.",
-  "Берчун Д.А.", 
-  "Гаврилов Н.А.", 
-  "Горяйнов Т.А.", 
-  "Дубицкий Д.С.", 
-  "Зарубайлова А.А.", 
-  "Кабаркдин С.А.", 
-  "Ленков Н.О.", 
-  "Мельников Г.В.", 
-  "Мельниченко Д.В.",
-  "Новохатько К.А.",
-  "Пищальноков Д.А.",
-  "Плащевский Е.К.",
-  "Русов Г.А.",
-  "Рябов М.Е.",
-  "Савин М.А.",
-  "Селивёрстов А.И.",
-  "Сидорчук О.В.",
-  "Фёдоров С.Е.",
-  "Филиппенко А. Н.",
-  "Хандримайло Д.В.",
-  "Чеверда Я.А.",
-  "Шкурдюк С.А.",
-  "Шпунтова П.В."
-          ]
 
 @bot.message_handler(commands=['start'])
 def choose_start(message):
@@ -113,10 +85,19 @@ def choose_command(message):
     bot.send_message(message.chat.id, f'{StdString}')
     # bot.edit_message_text(chat_id = message.chat.id, message_id = message.message_id, text=f'{StdString}')
 
-
   elif(message.text == 'Кто дежурит'):
-    duty_pair = random.sample(students, 2)
-    bot.send_message(message.chat.id, f"Дежурят: {duty_pair[0]}, {duty_pair[1]}")
+    connect = pyodbc.connect(key)
+    cursor.execute("SELECT TOP 2 BUTTON_TEXT FROM Duty_List WHERE Duty_Count = (SELECT MIN(Duty_Count) FROM Duty_List) ORDER BY BUTTON_TEXT")
+    answer4 = ""
+    for i in cursor.fetchall():
+      answer4 += (re.sub("[^А-Яа-я. ]", "", str(i)) + ' и ')
+
+    bot.send_message(message.chat.id, f"Сегодня дежурят: *{answer4[:-3]}*", parse_mode='Markdown')
+    connect.close()
+
+
+
+
   elif(message.text == 'Изменить список присутствующих'):
 
     if(int(answer3) == 0):
