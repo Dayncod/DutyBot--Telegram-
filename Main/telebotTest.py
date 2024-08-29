@@ -10,7 +10,7 @@ PL = PresenceList.Presence
 
 bot = telebot.TeleBot('6366348527:AAFcFWXB57aK06gZFdRn-Bdc0YNVcijb0C0')
 
-key = "DRIVER={SQL Server}; SERVER=DESKTOP-SMAKMB9\DIMONSQLSERVER; DATABASE=Customers; Trusted_Connection=yes;"
+key = "DRIVER={SQL Server}; SERVER=DESKTOP-SMAKMB9\\DIMONSQLSERVER; DATABASE=Customers; Trusted_Connection=yes;"
 
 connect = pyodbc.connect(key)
 cursor = connect.cursor()
@@ -92,11 +92,12 @@ def choose_command(message):
     for i in cursor.fetchall():
       answer4 += (re.sub("[^А-Яа-я. ]", "", str(i)) + ' и ')
 
-    bot.send_message(message.chat.id, f"Сегодня дежурят: *{answer4[:-3]}*", parse_mode='Markdown')
+    keyboard = types.InlineKeyboardMarkup()
+    saveButton = types.InlineKeyboardButton(text='Сохранить', callback_data='Save')
+    keyboard.add(saveButton)
+    
+    bot.send_message(message.chat.id, f"Сегодня дежурят: *{answer4[:-3]}*", reply_markup=keyboard, parse_mode='Markdown')
     connect.close()
-
-
-
 
   elif(message.text == 'Изменить список присутствующих'):
 
@@ -111,8 +112,26 @@ def choose_command(message):
 
   @bot.callback_query_handler(func=lambda call: True)
   def callback(call):
-      Editkeyboard = PL.EditList(call.data)
-      bot.edit_message_text(chat_id=call.message.chat.id,  message_id=call.message.message_id, text='Таблица присутствующих', reply_markup=Editkeyboard)
+      if(call.data == 'Save'):
+        connect = pyodbc.connect(key)
+        cursor.execute("SELECT TOP 2 BUTTON_TEXT FROM Duty_List WHERE Duty_Count = (SELECT MIN(Duty_Count) FROM Duty_List) ORDER BY BUTTON_TEXT")
+        answer5 = ''
+        answer6 = ''
+        num = 0
+        for i in cursor.fetchall():
+          num += 1
+          if(num == 1):
+            answer5 = (re.sub("[^А-Яа-я. ]", "", str(i)))
+            cursor.execute(f"UPDATE Duty_List SET Duty_Count = ((SELECT TOP 1 Duty_Count FROM Duty_List WHERE Duty_Count = 0) + 1) WHERE BUTTON_TEXT = '{answer5}'")
+            cursor.commit()
+          else:
+            answer6 = (re.sub("[^А-Яа-я. ]", "", str(i)))
+            cursor.execute(f"UPDATE Duty_List SET Duty_Count = ((SELECT TOP 1 Duty_Count FROM Duty_List WHERE Duty_Count = 0) + 1) WHERE BUTTON_TEXT = '{answer6}'")
+            cursor.commit()
+        connect.close()
+      else:
+        Editkeyboard = PL.EditList(call.data)
+        bot.edit_message_text(chat_id=call.message.chat.id,  message_id=call.message.message_id, text='Таблица присутствующих', reply_markup=Editkeyboard)
 
 bot.polling(none_stop=True, interval=0)
 
