@@ -104,8 +104,14 @@ def choose_command(message):
     connect.close()
 
   elif(message.text == 'Скачать таблицу дежурств'):
-    bot.send_message(message.chat.id, 'дЕРЖИ')
+    connect = pyodbc.connect(key)
+    cursor.execute("SELECT * FROM Duty_List ORDER BY BUTTON_TEXT")
+    answerForExcel = cursor.fetchall()
 
+    with open('D:\\GitHub\\DutyBot\\Main\\Data.csv', 'a') as ExcelFile:
+      ExcelWrite = csv.writer(ExcelFile, delimiter=' ')
+      for col in answerForExcel:
+        ExcelWrite.writerow({col[0], col[1], col[2], col[3], col[4]})
 
   elif(message.text == 'Изменить список присутствующих'):
 
