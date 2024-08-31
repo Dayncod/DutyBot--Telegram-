@@ -1,4 +1,5 @@
 import pyodbc
+import csv
 import telebot
 import re
 
@@ -56,14 +57,17 @@ def choose_start(message):
   if(int(answer2) == 1):
     btn1 = types.KeyboardButton('Список присутствующих')
     btn2 = types.KeyboardButton('Кто дежурит')
+    btn3 = types.KeyboardButton('Скачать таблицу дежурств')
     Buttons.add(btn1, btn2)
+    Buttons.add(btn3)
     bot.send_message(message.chat.id, f'Привет {message.from_user.first_name}, я бот-дежурный для группы З-3-9Б-21, что ты хочешь узнать?', reply_markup=Buttons)
   elif(int(answer2) == 0):
     btn1 = types.KeyboardButton('Список присутствующих')
     btn2 = types.KeyboardButton('Кто дежурит')
     btn3 = types.KeyboardButton('Изменить список присутствующих')
+    btn4 = types.KeyboardButton('Скачать таблицу дежурств')
     Buttons.add(btn1, btn2)
-    Buttons.add(btn3)
+    Buttons.add(btn3, btn4)
     bot.send_message(message.chat.id, f'Здравствуйте, Администратор {message.from_user.first_name}', reply_markup=Buttons)
 
   connect.close()
@@ -98,6 +102,10 @@ def choose_command(message):
     
     bot.send_message(message.chat.id, f"Сегодня дежурят: *{answer4[:-3]}*", reply_markup=keyboard, parse_mode='Markdown')
     connect.close()
+
+  elif(message.text == 'Скачать таблицу дежурств'):
+    bot.send_message(message.chat.id, 'дЕРЖИ')
+
 
   elif(message.text == 'Изменить список присутствующих'):
 
