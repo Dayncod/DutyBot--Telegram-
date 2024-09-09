@@ -9,9 +9,9 @@ from telebot import types
 
 PL = PresenceList.Presence
 
-bot = telebot.TeleBot('6366348527:AAFcFWXB57aK06gZFdRn-Bdc0YNVcijb0C0')
+bot = telebot.TeleBot('YOUR TOKEN')
 
-key = "DRIVER={SQL Server}; SERVER=DESKTOP-SMAKMB9\\DIMONSQLSERVER; DATABASE=Customers; Trusted_Connection=yes;"
+key = "DRIVER={SQL Server}; SERVER=NAME PC\\NAME SERVER; DATABASE=Customers; Trusted_Connection=yes;"
 
 connect = pyodbc.connect(key)
 cursor = connect.cursor()
